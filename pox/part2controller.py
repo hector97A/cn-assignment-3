@@ -1,5 +1,6 @@
 from pox.core import core
 import pox.openflow.libopenflow_01 as of
+import pox.lib.packet as pkt
 
 log = core.getLogger()
 
@@ -17,6 +18,33 @@ class Firewall (object):
     connection.addListeners(self)
 
     #add switch rules here
+    
+    ##Rule for accepting all ICMP traffic
+    msg = of.ofp_flow_mod()
+    msg.match.nw_src = None #wildcard for all addresses
+    msg.match.nw_dst = None #wildcard for all addresses
+    msg.match.dl_type = 0x800
+    msg.match.nw_proto = pkt.ipv4.ICMP_PROTOCOL #pkt.ipv4.ICMP_PROTOCOL
+    msg.actions.append(of.OFPP_FLOOD)
+    self.connection.send(msg)
+    
+    ##Rule for accepting all ARP traffic
+    """msg = of.ofp_flow_mod()
+    msg.match.nw_src = None #wildcard for all addresses
+    msg.match.nw_dst = None #wildcard for all addresses
+    msg.match.dl_type = 0x800
+    msg.match.nw_proto = pkt.ARP_PROTOCOL #pkt.ipv4.ARP_PROTOCOL??
+    msg.actions.append(of.OFPP_FLOOD)
+    self.connection.send(msg)"""
+    
+    ##Rule for rejecting all other traffic
+    """msg = of.ofp_flow_mod()
+    msg.match.nw_src = None #wildcard for all addresses
+    msg.match.nw_dst = None #wildcard for all addresses
+    msg.match.dl_type = 0x800
+    msg.match.nw_proto = None 
+    msg.actions.append(of.OFPP_FLOOD)
+    self.connection.send(msg)"""
 
   def _handle_PacketIn (self, event):
     """
