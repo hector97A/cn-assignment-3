@@ -17,34 +17,42 @@ class Firewall (object):
     # This binds our PacketIn event listener
     connection.addListeners(self)
 
+    msg = of.ofp_flow_mod(command=of.OFPFC_DELETE)
+    self.connection.send(msg)
     #add switch rules here
     
     ##Rule for accepting all ICMP traffic
     msg = of.ofp_flow_mod()
-    msg.match.nw_src = None #wildcard for all addresses
-    msg.match.nw_dst = None #wildcard for all addresses
-    msg.match.dl_type = 0x800
-    msg.match.nw_proto = pkt.ipv4.ICMP_PROTOCOL #pkt.ipv4.ICMP_PROTOCOL
-    msg.actions.append(of.OFPP_FLOOD)
+    match = of.ofp_match()
+    match.nw_src = None #wildcard for all addresses
+    match.nw_dst = None #wildcard for all addresses
+    match.dl_type = 0x800
+    match.nw_proto = pkt.ipv4.ICMP_PROTOCOL #pkt.ipv4.ICMP_PROTOCOL
+    msg.match = match
+    msg.actions.append(of.ofp_action_output(port = of.OFPP_FLOOD))
+    #msg.actions.append(of.OFPP_FLOOD)
     self.connection.send(msg)
     
-    ##Rule for accepting all ARP traffic
-    """msg = of.ofp_flow_mod()
-    msg.match.nw_src = None #wildcard for all addresses
-    msg.match.nw_dst = None #wildcard for all addresses
-    msg.match.dl_type = 0x800
-    msg.match.nw_proto = pkt.ARP_PROTOCOL #pkt.ipv4.ARP_PROTOCOL??
-    msg.actions.append(of.OFPP_FLOOD)
-    self.connection.send(msg)"""
-    
+    ##Rules for accepting all ARP traffic
+    msg = of.ofp_flow_mod()
+    match = of.ofp_match()
+    match.nw_src = None #wildcard for all addresses
+    match.nw_dst = None #wildcard for all addresses
+    match.dl_type = 0x806
+    match.nw_proto = None 
+    #by setting dl_type to ARP then we can just set nw_proto to wildcard 
+    msg.match = match
+    msg.actions.append(of.ofp_action_output(port = of.OFPP_FLOOD))
+    self.connection.send(msg)
+
     ##Rule for rejecting all other traffic
-    """msg = of.ofp_flow_mod()
-    msg.match.nw_src = None #wildcard for all addresses
-    msg.match.nw_dst = None #wildcard for all addresses
-    msg.match.dl_type = 0x800
-    msg.match.nw_proto = None 
-    msg.actions.append(of.OFPP_FLOOD)
-    self.connection.send(msg)"""
+    msg = of.ofp_flow_mod()
+    match = of.ofp_match() 
+    #leaving all fields undefined wildcards them and default 
+    msg.match = match 
+    #msg.actions.append(of.ofp_action_output(port = of.OFPP_NONE))
+    self.connection.send(msg)
+    
 
   def _handle_PacketIn (self, event):
     """
