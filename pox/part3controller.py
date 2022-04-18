@@ -1,6 +1,7 @@
 from pox.core import core
 import pox.openflow.libopenflow_01 as of
 from pox.lib.addresses import IPAddr, IPAddr6, EthAddr
+import pox.lib.packet as pkt
 
 log = core.getLogger()
 
@@ -42,23 +43,125 @@ class Part3Controller (object):
       exit(1)
 
   def s1_setup(self):
-    #put switch 1 rules here
+    msg = of.ofp_flow_mod()
+    match = of.ofp_match()
+    match.nw_src = None #wildcard for all addresses
+    match.nw_dst = "10.0.4.10"
+    match.dl_type = 0x800
+    match.nw_proto = pkt.ipv4.ICMP_PROTOCOL	
+    msg.match = match
+    msg.actions.append(of.ofp_action_output(port = of.OFPP_CONTROLLER))
+    #msg.actions.append(of.OFPP_ALL)
+    self.connection.send(msg)
+    
+    ##Rule for rejecting all other traffic
+    msg = of.ofp_flow_mod()
+    match = of.ofp_match() 
+    #leaving all fields undefined wildcards them and default 
+    msg.match = match 
+    #msg.actions.append(of.ofp_action_output(port = of.OFPP_NONE))
+    self.connection.send(msg)
     pass
 
   def s2_setup(self):
-    #put switch 2 rules here
+    msg = of.ofp_flow_mod()
+    match = of.ofp_match()
+    match.nw_src = None #wildcard for all addresses
+    match.nw_dst = "10.0.4.10"
+    match.dl_type = 0x800
+    match.nw_proto = pkt.ipv4.ICMP_PROTOCOL
+    msg.match = match
+    msg.actions.append(of.ofp_action_output(port = of.OFPP_CONTROLLER))
+    #msg.actions.append(of.OFPP_ALL)
+    self.connection.send(msg)
+    
+    ##Rule for rejecting all other traffic
+    msg = of.ofp_flow_mod()
+    match = of.ofp_match() 
+    #leaving all fields undefined wildcards them and default 
+    msg.match = match 
+    #msg.actions.append(of.ofp_action_output(port = of.OFPP_NONE))
+    self.connection.send(msg)
     pass
 
   def s3_setup(self):
-    #put switch 3 rules here
+    msg = of.ofp_flow_mod()
+    match = of.ofp_match()
+    match.nw_src = None #wildcard for all addresses
+    match.nw_dst = "10.0.4.10"
+    match.dl_type = 0x800
+    match.nw_proto = pkt.ipv4.ICMP_PROTOCOL
+    msg.match = match
+    msg.actions.append(of.ofp_action_output(port = of.OFPP_CONTROLLER))
+    #msg.actions.append(of.OFPP_ALL)
+    self.connection.send(msg)
+    
+    ##Rule for rejecting all other traffic
+    msg = of.ofp_flow_mod()
+    match = of.ofp_match() 
+    #leaving all fields undefined wildcards them and default 
+    msg.match = match 
+    #msg.actions.append(of.ofp_action_output(port = of.OFPP_NONE))
+    self.connection.send(msg)
     pass
 
   def cores21_setup(self):
     #put core switch rules here
+    msg = of.ofp_flow_mod()
+    match = of.ofp_match()
+    match.nw_src = "172.16.10.100"
+    #leaving all fields undefined wildcards them and default 
+    msg.match = match 
+    #msg.actions.append(of.ofp_action_output(port = of.OFPP_NONE))
+    self.connection.send(msg)
+    
+    msg = of.ofp_flow_mod()
+    match = of.ofp_match()
+    match.nw_dst = "172.16.10.100"
+    #leaving all fields undefined wildcards them and default 
+    msg.match = match 
+    #msg.actions.append(of.ofp_action_output(port = of.OFPP_NONE))
+    self.connection.send(msg)
+    
+    msg = of.ofp_flow_mod()
+    match = of.ofp_match()
+    match.nw_src = (IPAddr("10.0.0.0"), 16)
+    match.nw_dst = None #wildcard for all addresses
+    match.dl_type = 0x800
+    match.nw_proto = pkt.ipv4.ICMP_PROTOCOL
+    msg.match = match
+    msg.actions.append(of.ofp_action_output(port = of.OFPP_FLOOD))
+    #msg.actions.append(of.OFPP_FLOOD)
+    self.connection.send(msg)
+    
+    ##Rule for rejecting all other traffic
+    msg = of.ofp_flow_mod()
+    match = of.ofp_match() 
+    #leaving all fields undefined wildcards them and default 
+    msg.match = match 
+    #msg.actions.append(of.ofp_action_output(port = of.OFPP_NONE))
+    self.connection.send(msg)
     pass
 
   def dcs31_setup(self):
-    #put datacenter switch rules here
+    msg = of.ofp_flow_mod()
+    match = of.ofp_match()
+    match.nw_src = None #wildcard for all addresses
+    match.nw_dst = "10.0.4.10"
+    match.dl_type = 0x800
+    match.nw_proto = pkt.ipv4.ICMP_PROTOCOL
+    msg.match = match
+    msg.actions.append(of.ofp_action_output(port = of.OFPP_ALL))
+    #msg.actions.append(of.OFPP_FLOOD)
+    self.connection.send(msg)
+    
+    ##Rule for rejecting all other traffic
+    msg = of.ofp_flow_mod()
+    match = of.ofp_match() 
+    #leaving all fields undefined wildcards them and default 
+    msg.match = match 
+    #msg.actions.append(of.ofp_action_output(port = of.OFPP_NONE))
+    self.connection.send(msg)
     pass
 
   #used in part 4 to handle individual ARP packets
