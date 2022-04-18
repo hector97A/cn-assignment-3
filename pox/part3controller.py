@@ -46,9 +46,9 @@ class Part3Controller (object):
     msg = of.ofp_flow_mod()
     match = of.ofp_match()
     match.nw_src = None #wildcard for all addresses
-    match.nw_dst = "10.0.4.10"	
+    match.nw_dst = None
     msg.match = match
-    msg.actions.append(of.ofp_action_output(port = of.OFPP_CONTROLLER))
+    msg.actions.append(of.ofp_action_output(port = of.OFPP_ALL))
     self.connection.send(msg)
     
     ##Rule for rejecting all other traffic
@@ -63,9 +63,9 @@ class Part3Controller (object):
     msg = of.ofp_flow_mod()
     match = of.ofp_match()
     match.nw_src = None #wildcard for all addresses
-    match.nw_dst = "10.0.4.10"
+    match.nw_dst = None
     msg.match = match
-    msg.actions.append(of.ofp_action_output(port = of.OFPP_CONTROLLER))
+    msg.actions.append(of.ofp_action_output(port = of.OFPP_ALL))
     self.connection.send(msg)
     
     ##Rule for rejecting all other traffic
@@ -80,9 +80,9 @@ class Part3Controller (object):
     msg = of.ofp_flow_mod()
     match = of.ofp_match()
     match.nw_src = None #wildcard for all addresses
-    match.nw_dst = "10.0.4.10"
+    match.nw_dst = None
     msg.match = match
-    msg.actions.append(of.ofp_action_output(port = of.OFPP_CONTROLLER))
+    msg.actions.append(of.ofp_action_output(port = of.OFPP_ALL))
     self.connection.send(msg)
     
     ##Rule for rejecting all other traffic
@@ -128,7 +128,7 @@ class Part3Controller (object):
     msg = of.ofp_flow_mod()
     match = of.ofp_match()
     match.nw_src = None #wildcard for all addresses
-    match.nw_dst = "10.0.4.10"
+    match.nw_dst = None
     msg.match = match
     msg.actions.append(of.ofp_action_output(port = of.OFPP_ALL))
     self.connection.send(msg)
